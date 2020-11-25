@@ -1,7 +1,15 @@
 import os
+import re
 import json
 
-DATASET_DIR = os.environ['DATASET_DIR']
+
+# Constants.
+REMOVE_WHITESPACES = re.compile(r'\s+')
+
+# Recieve enviroment variables.
+DATASET_DIR = os.environ['DATASET_DIR'] 
+TRAINING_SETS = re.sub(REMOVE_WHITESPACES, '',
+                       os.environ['TRAIN_ON_SETS']).split(',')
 
 def parse_file(input_path: str, output_path: str) -> None:
     """Convert the given JSOn file to a CSV file.
@@ -32,6 +40,21 @@ def parse_file(input_path: str, output_path: str) -> None:
         input_file.close()
         output_file.close()
 
+def main():
+    """Loop though all enabled datasets and convert them to csv"""
+    # Attempt creating directory.
+    os.makedirs(f'{DATASET_DIR}/csv/', exist_ok=True)
 
-# Testing
-parse_file(DATASET_DIR + '/btc.json', DATASET_DIR + '/btc.csv')
+    # Loop through all available datasets.
+    for symbol in TRAINING_SETS:
+        print(f'Processing {symbol}...')
+
+        # Create paths and parse the data.
+        input_path = f'{DATASET_DIR}/json/{symbol}.json'
+        output_path = f'{DATASET_DIR}/csv/{symbol}.csv'
+        parse_file(input_path, output_path)
+
+    print('finished!')
+
+if __name__ == '__main__':
+    main()
