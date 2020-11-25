@@ -46,7 +46,7 @@ def count_datapoints(after_date: str) -> None:
         print(symbol, len(load_dataset(symbol, after_date)))
 
 
-def load_datasets(target: str, after_date: str, remove_date: bool=True) -> (np.array, np.array):
+def load_datasets(target: str, after_date: str, remove_date:bool=True) -> (np.array, np.array):
     # TODO add comments
     y = []
     x_df = pd.DataFrame()
@@ -68,6 +68,6 @@ def load_datasets(target: str, after_date: str, remove_date: bool=True) -> (np.a
     x_df.dropna(inplace=True)
 
     if remove_date:
-        df.drop(['date'], 1, inplace=True)
+        x_df.drop('date', 1, inplace=True)
 
-    return x_df.to_numpy() ,y.to_numpy()
+    return x_df.to_numpy(), y.to_numpy()
