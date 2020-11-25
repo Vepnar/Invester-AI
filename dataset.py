@@ -71,3 +71,14 @@ def load_datasets(target: str, after_date: str, remove_date:bool=True) -> (np.ar
         x_df.drop('date', 1, inplace=True)
 
     return x_df.to_numpy(), y.to_numpy()
+
+class DataWindow:
+    window_x,window_y = None, None
+    def __init__(self, train_x, train_y, window_size=30):
+        windows = len(train_x) - window_size - 1
+        self.window_x = []
+        self.window_y = []
+        for i in range(0, windows):
+            self.window_x.append(train_x[i:window_size])
+            self.window_y.append(train_y[i+window_size])
+            
