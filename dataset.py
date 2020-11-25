@@ -9,15 +9,16 @@ from datetime import date
 
 # Constants.
 REMOVE_WHITESPACES = re.compile(r"\s+")
-DTYPE = {'open': np.float32, 'close': np.float32,  'high': np.float32,  'low': np.float32}
+DTYPE = {"open": np.float32, "close": np.float32, "high": np.float32, "low": np.float32}
 
 # Recieve enviroment variables.
 DATASET_DIR = os.environ["DATASET_DIR"]
-TRAINING_SETS = re.sub(REMOVE_WHITESPACES, "",
-                       os.environ["TRAIN_ON_SETS"]).split(",")
+TRAINING_SETS = re.sub(REMOVE_WHITESPACES, "", os.environ["TRAIN_ON_SETS"]).split(",")
 
 
-def load_dataset(symbol: str, after_date: str, remove_date : bool=False) -> pd.DataFrame:
+def load_dataset(
+    symbol: str, after_date: str, remove_date: bool = False
+) -> pd.DataFrame:
     """Load a dataset from a CSV file.
 
     Args:
@@ -32,7 +33,7 @@ def load_dataset(symbol: str, after_date: str, remove_date : bool=False) -> pd.D
     df.sort_values(by=["date"], inplace=True)
     df = df[(after_date < df["date"])]
     if remove_date:
-        df.drop(['date'], 1, inplace=True)
+        df.drop(["date"], 1, inplace=True)
     return df
 
 
@@ -46,7 +47,9 @@ def count_datapoints(after_date: str) -> None:
         print(symbol, len(load_dataset(symbol, after_date)))
 
 
-def load_datasets(target: str, after_date: str, remove_date:bool=True) -> (np.array, np.array):
+def load_datasets(
+    target: str, after_date: str, remove_date: bool = True
+) -> (np.array, np.array):
     # TODO add comments
     y = []
     x_df = pd.DataFrame()
@@ -57,28 +60,29 @@ def load_datasets(target: str, after_date: str, remove_date:bool=True) -> (np.ar
         # Merge dataframes when this is possible
         if x_df.empty:
             x_df = df
-        else: 
-            x_df= x_df.merge(df, how='outer', on='date')
+        else:
+            x_df = x_df.merge(df, how="outer", on="date")
 
         # Set the open price as the Y data when the symbols match
         if symbol == target:
-            y = df['open']
+            y = df["open"]
 
     # Drop rows with missing data
     x_df.dropna(inplace=True)
 
     if remove_date:
-        x_df.drop('date', 1, inplace=True)
+        x_df.drop("date", 1, inplace=True)
 
     return x_df.to_numpy(), y.to_numpy()
 
+
 class DataWindow:
-    window_x,window_y = None, None
+    window_x, window_y = None, None
+
     def __init__(self, train_x, train_y, window_size=30):
         windows = len(train_x) - window_size - 1
         self.window_x = []
         self.window_y = []
         for i in range(0, windows):
             self.window_x.append(train_x[i:window_size])
-            self.window_y.append(train_y[i+window_size])
-            
+            self.window_y.append(train_y[i + window_size])
