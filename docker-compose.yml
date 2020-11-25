@@ -1,0 +1,10 @@
+version: '3.6'  
+services:  
+  app:
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+    command: python convert_csv.py
