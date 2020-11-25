@@ -56,7 +56,6 @@ def load_datasets(target: str, after_date: str, remove_date: bool=True) -> (np.a
 
         # Merge dataframes when this is possible
         if x_df.empty:
-            print('merge')
             x_df = df
         else: 
             x_df= x_df.merge(df, how='outer', on='date')
