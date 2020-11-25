@@ -27,7 +27,7 @@ def parse_file(input_path: str, output_path: str) -> None:
     output_file = open(output_path, "w")
 
     # Write csv header.
-    output_file.write("date;open;close;high;low\n")
+    output_file.write("date,open,close,high,low\n")
 
     try:
         # Access historical data.
@@ -36,7 +36,7 @@ def parse_file(input_path: str, output_path: str) -> None:
         # Write historical data to the file.
         for i in historical:
             output_data = (
-                f"{i['date']};{i['open']};{i['close']};{i['high']};{i['low']}\n"
+                f"{i['date']},{i['open']},{i['close']},{i['high']},{i['low']}\n"
             )
             output_file.write(output_data)
 
