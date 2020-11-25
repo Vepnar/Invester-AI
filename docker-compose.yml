@@ -1,6 +1,14 @@
 version: '3.6'  
-services:  
-  app:
+services: 
+  download:
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+    command: python download-datasets.py 
+  convert:
     build:
       context: .
     env_file:
