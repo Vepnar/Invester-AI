@@ -30,7 +30,7 @@ def load_dataset(symbol: str, after_date: str, remove_date : bool=False) -> pd.D
     """
     df = pd.read_csv(f"{DATASET_DIR}/csv/{symbol}.csv", dtype=DTYPE, parse_dates=True)
     df.sort_values(by=["date"], inplace=True)
-    df = df[("2016-1-1" < df["date"])]
+    df = df[(after_date < df["date"])]
     if remove_date:
         df.drop(['date'], 1, inplace=True)
     return df
