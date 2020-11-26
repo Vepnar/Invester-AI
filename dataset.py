@@ -1,3 +1,8 @@
+"""Module to access and convert the dataset into useable data.
+
+Author: Vepnar (Arjan de Haan)
+"""
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -5,7 +10,6 @@ import os
 import re
 import numpy as np
 import pandas as pd
-from datetime import date
 
 # Constants.
 REMOVE_WHITESPACES = re.compile(r"\s+")
@@ -51,38 +55,50 @@ def load_datasets(
     target: str, after_date: str, remove_date: bool = True
 ) -> (np.array, np.array):
     # TODO add comments
-    y = []
-    x_df = pd.DataFrame()
+    train_y = []
+    train_x = pd.DataFrame()
     for symbol in TRAINING_SETS:
-        print(symbol)
-        df = load_dataset(symbol, after_date)
+        raw_df = load_dataset(symbol, after_date)
 
         # Merge dataframes when this is possible
-        if x_df.empty:
-            x_df = df
+        if train_x.empty:
+            train_x = raw_df
         else:
-            x_df = x_df.merge(df, how="outer", on="date")
+            train_x = train_x.merge(raw_df, how="outer", on="date")
 
         # Set the open price as the Y data when the symbols match
         if symbol == target:
-            y = df["open"]
+            train_y = raw_df["open"]
 
-    # Drop rows with missing data
-    x_df.dropna(inplace=True)
+    # Drop rows with missing data.
+    train_x.dropna(inplace=True)
 
     if remove_date:
-        x_df.drop("date", 1, inplace=True)
+        train_x.drop("date", 1, inplace=True)
 
-    return x_df.to_numpy(), y.to_numpy()
+    return train_x.to_numpy(), train_y.to_numpy()
 
 
-class DataWindow:
-    window_x, window_y = None, None
+def create_window(self, train_x: np.array, train_y: np.array, window_size: int = 30):
+    """Convert the given data set into a sequence window.
 
-    def __init__(self, train_x, train_y, window_size=30):
-        windows = len(train_x) - window_size - 1
-        self.window_x = []
-        self.window_y = []
-        for i in range(0, windows):
-            self.window_x.append(train_x[i:window_size])
-            self.window_y.append(train_y[i + window_size])
+    Turn: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    Into:
+        - [1, 2, 3] [4]
+        - [2, 3, 4] [5]
+        - [3, 4, 5] [6]
+
+    Except with given x and y values.
+
+
+    Args:
+        train_x (np.array): X array. Allowed to be multi dimensional.
+        train_y (np.array): Y array. Not allowed to be multi dimensional.
+        window_size (int, optional): The size of the sequence window. Defaults to 30.
+    """
+    windows = len(train_x) - window_size - 1
+    window_x = []
+    window_y = []
+    for i in range(0, windows):
+        window_x.append(train_x[i:window_size])
+        window_y.append(train_y[i + window_size])
