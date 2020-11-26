@@ -1,10 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Module to access and convert the dataset into useable data.
 
 Author: Vepnar (Arjan de Haan)
 """
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import os
 import re
