@@ -78,7 +78,7 @@ def load_datasets(
     return train_x.to_numpy(), train_y.to_numpy()
 
 
-def create_window(self, train_x: np.array, train_y: np.array, window_size: int = 30):
+def create_window(self, train_x: np.array, train_y: np.array, window_size: int = 30) -> (np.array, np.array):
     """Convert the given data set into a sequence window.
 
     Turn: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -94,6 +94,9 @@ def create_window(self, train_x: np.array, train_y: np.array, window_size: int =
         train_x (np.array): X array. Allowed to be multi dimensional.
         train_y (np.array): Y array. Not allowed to be multi dimensional.
         window_size (int, optional): The size of the sequence window. Defaults to 30.
+    
+    returns:
+        (np.array, np.array): X window & Y window.
     """
     windows = len(train_x) - window_size - 1
     window_x = []
@@ -101,3 +104,5 @@ def create_window(self, train_x: np.array, train_y: np.array, window_size: int =
     for i in range(0, windows):
         window_x.append(train_x[i:window_size])
         window_y.append(train_y[i + window_size])
+
+    return np.array(window_x), np.array(window_y)
