@@ -11,16 +11,18 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
+
 # Constants.
 REMOVE_WHITESPACES = re.compile(r"\s+")
-DTYPE = {"open": np.float32, "close": np.float32, "high": np.float32, "low": np.float32}
+DTYPE = {"open": np.float64, "close": np.float64, "high": np.float64, "low": np.float64}
 
 # Recieve enviroment variables.
 DATASET_DIR = os.environ["DATASET_DIR"]
 TRAINING_SETS = re.sub(REMOVE_WHITESPACES, "", os.environ["TRAIN_ON_SETS"]).split(",")
 
 # Global variable
-SCALERS = None # [x scaler, y scaler]
+SCALERS = None
+
 
 def load_dataset(
     symbol: str, after_date: str, remove_date: bool = False
@@ -70,7 +72,7 @@ def load_datasets(
 
         # Set the open price as the Y data when the symbols match
         if symbol == target:
-            train_y = raw_df[['open', 'close']]
+            train_y = raw_df[["open", "close"]]
 
     # Drop rows with missing data.
     train_x.dropna(inplace=True)
@@ -78,10 +80,12 @@ def load_datasets(
     if remove_date:
         train_x.drop("date", 1, inplace=True)
 
-    return train_x.to_numpy(), train_y.to_numpy()
+    return train_x.values, train_y.to_numpy()
 
 
-def create_window(train_x: np.array, train_y: np.array, window_size: int = 30) -> (np.array, np.array):
+def create_window(
+    train_x: np.array, train_y: np.array, window_size: int = 30
+) -> (np.array, np.array):
     """Convert the given data set into a sequence window.
 
     Turn: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -105,20 +109,19 @@ def create_window(train_x: np.array, train_y: np.array, window_size: int = 30) -
     window_x = []
     window_y = []
     for i in range(0, windows):
-        window_x.append(train_x[i:window_size])
+        window_x.append(train_x[i : i + window_size])
         window_y.append(train_y[i + window_size])
 
     return np.asarray(window_x), np.asarray(window_y)
 
-train_x, train_y = load_datasets('BTC', '2016-1-1')
 
-def min_max_scaler(train_x, train_y):
+def min_max_scaler(train_x: np.array, train_y: np.array):
     global SCALERS
     if SCALERS:
         train_x = SCALERS[0].transform(train_x)
         train_y = SCALERS[1].transform(train_y)
     else:
-        SCALERS =[MinMaxScaler(), MinMaxScaler()] 
+        SCALERS = [MinMaxScaler(), MinMaxScaler()]
         train_x = SCALERS[0].fit_transform(train_x)
         train_y = SCALERS[1].fit_transform(train_y)
 
