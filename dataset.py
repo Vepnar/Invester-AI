@@ -9,6 +9,7 @@ import os
 import re
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
 # Constants.
 REMOVE_WHITESPACES = re.compile(r"\s+")
@@ -18,6 +19,8 @@ DTYPE = {"open": np.float32, "close": np.float32, "high": np.float32, "low": np.
 DATASET_DIR = os.environ["DATASET_DIR"]
 TRAINING_SETS = re.sub(REMOVE_WHITESPACES, "", os.environ["TRAIN_ON_SETS"]).split(",")
 
+# Global variable
+SCALERS = None # [x scaler, y scaler]
 
 def load_dataset(
     symbol: str, after_date: str, remove_date: bool = False
@@ -105,4 +108,18 @@ def create_window(train_x: np.array, train_y: np.array, window_size: int = 30) -
         window_x.append(train_x[i:window_size])
         window_y.append(train_y[i + window_size])
 
-    return np.array(window_x), np.array(window_y)
+    return np.asarray(window_x), np.asarray(window_y)
+
+train_x, train_y = load_datasets('BTC', '2016-1-1')
+
+def min_max_scaler(train_x, train_y):
+    global SCALERS
+    if SCALERS:
+        train_x = SCALERS[0].transform(train_x)
+        train_y = SCALERS[1].transform(train_y)
+    else:
+        SCALERS =[MinMaxScaler(), MinMaxScaler()] 
+        train_x = SCALERS[0].fit_transform(train_x)
+        train_y = SCALERS[1].fit_transform(train_y)
+
+    return train_x, train_y
