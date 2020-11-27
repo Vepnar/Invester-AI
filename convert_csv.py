@@ -12,6 +12,8 @@ REMOVE_WHITESPACES = re.compile(r"\s+")
 # Recieve enviroment variables.
 DATASET_DIR = os.environ["DATASET_DIR"]
 TRAINING_SETS = re.sub(REMOVE_WHITESPACES, "", os.environ["TRAIN_ON_SETS"]).split(",")
+TARGET_SET = os.environ.get("TARGET_CURRENCY", 'BTC')
+TRAINING_SETS.insert(0, TARGET_SET)
 
 
 def parse_file(input_path: str, output_path: str) -> None:
@@ -27,7 +29,7 @@ def parse_file(input_path: str, output_path: str) -> None:
     output_file = open(output_path, "w")
 
     # Write csv header.
-    output_file.write("date,open,close,high,low\n")
+    output_file.write("date,open,close,high,low,volume,vwap\n")
 
     try:
         # Access historical data.
@@ -36,7 +38,7 @@ def parse_file(input_path: str, output_path: str) -> None:
         # Write historical data to the file.
         for i in historical:
             output_data = (
-                f"{i['date']},{i['open']},{i['close']},{i['high']},{i['low']}\n"
+                f"{i['date']},{i['open']},{i['close']},{i['high']},{i['low']},{i['volume']},{i['vwap']}\n"
             )
             output_file.write(output_data)
 

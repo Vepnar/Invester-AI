@@ -16,6 +16,8 @@ KEY = os.environ["KEY"]
 TRAINING_SETS = re.sub(REMOVE_WHITESPACES, "", os.environ["TRAIN_ON_SETS"]).split(",")
 COMPARING_CURRENCY = os.environ["COMPARING_CURRENCY"]
 DATASET_DIR = os.environ["DATASET_DIR"]
+TARGET_SET = os.environ.get("TARGET_CURRENCY", 'BTC')
+TRAINING_SETS.insert(0, TARGET_SET)
 
 
 def download_currency(symbol: str) -> None:
