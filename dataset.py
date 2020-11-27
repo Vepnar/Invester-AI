@@ -67,7 +67,7 @@ def load_datasets(
 
         # Set the open price as the Y data when the symbols match
         if symbol == target:
-            train_y = raw_df["open"]
+            train_y = raw_df[['open', 'close']]
 
     # Drop rows with missing data.
     train_x.dropna(inplace=True)
@@ -78,7 +78,7 @@ def load_datasets(
     return train_x.to_numpy(), train_y.to_numpy()
 
 
-def create_window(self, train_x: np.array, train_y: np.array, window_size: int = 30) -> (np.array, np.array):
+def create_window(train_x: np.array, train_y: np.array, window_size: int = 30) -> (np.array, np.array):
     """Convert the given data set into a sequence window.
 
     Turn: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
