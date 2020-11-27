@@ -9,6 +9,7 @@ import os
 import re
 import numpy as np
 import pandas as pd
+
 from sklearn.preprocessing import MinMaxScaler
 
 
@@ -133,3 +134,17 @@ def unscale(train_x: np.array, train_y: np.array) -> (np.array, np.array):
     train_x = SCALERS[0].inverse_transform(train_x)
     train_y = SCALERS[1].inverse_transform(train_y)
     return train_x, train_y
+
+def unscale_x(train_x: np.array, window: bool = False) -> np.array:
+    global SCALERS
+
+    if window:
+        train_x = train_x.reshape(-1, train_x.shape[-1])
+    return SCALERS[0].inverse_transform(train_x)
+
+def unscale_y(train_y: np.array, window: bool = False) -> np.array:
+    global SCALERS
+
+    if window:
+        train_y = [train_y]
+    return SCALERS[1].inverse_transform(train_y)
