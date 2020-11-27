@@ -115,7 +115,7 @@ def create_window(
     return np.asarray(window_x), np.asarray(window_y)
 
 
-def min_max_scaler(train_x: np.array, train_y: np.array):
+def min_max_scaler(train_x: np.array, train_y: np.array) -> (np.array, np.array):
     global SCALERS
     if SCALERS:
         train_x = SCALERS[0].transform(train_x)
@@ -126,3 +126,8 @@ def min_max_scaler(train_x: np.array, train_y: np.array):
         train_y = SCALERS[1].fit_transform(train_y)
 
     return train_x, train_y
+
+def unscale(train_x: np.array, train_y: np.array) -> (np.array, np.array):
+    global SCALERS
+    train_x = SCALERS[0].inverse_transform(train_x)
+    train_y = SCALERS[1].inverse_transform(train_y)
