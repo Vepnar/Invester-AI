@@ -10,6 +10,7 @@ import re
 import pickle
 import numpy as np
 import pandas as pd
+from datetime import datetime
 
 from sklearn.preprocessing import MinMaxScaler
 
@@ -17,6 +18,7 @@ from sklearn.preprocessing import MinMaxScaler
 # Constants.
 REMOVE_WHITESPACES = re.compile(r"\s+")
 DTYPE = {"open": np.float64, "close": np.float64, "high": np.float64, "low": np.float64}
+DATE_PARSER = lambda date: datetime.strptime(date, '%Y-%m-%d')
 
 # Recieve enviroment variables.
 DATASET_DIR = os.environ.get("DATASET_DIR", './dataset')
@@ -27,6 +29,8 @@ TRAINING_SETS.insert(0, TARGET_SET)
 # Global variable
 SCALERS = None
 
+def parse_dataframe(symbol, **kwargs):
+    return pd.read_csv(f"{DATASET_DIR}/csv/{symbol}.csv", dtype=DTYPE,  parse_dates=['date'], date_parser=DATE_PARSER, **kwargs)
 
 def load_dataset(
     symbol: str, after_date: str, remove_date: bool = False
@@ -157,3 +161,26 @@ def load_scaler(path='scaler.pickle'):
     global SCALERS
     with open(path, 'rb') as file:
         SCALERS = pickle.load(file)
+
+def dataset_age() -> int:
+    """Count the age of the oldest dataset.
+
+    Returns:
+        int: Age of the oldest dataset
+    """
+    age, now = 0, datetime.now()
+
+    # Loop though all active datasets.
+    for symbol in TRAINING_SETS:
+
+        # Select the newest row and compute the difference.
+        raw_df = parse_dataframe(symbol,nrows=2)
+        last = raw_df.iloc[0]['date']
+        difference = (now - last).days
+        
+        # Update the dage when it's older than the oldest dataset.
+        if difference > age:
+            age = difference
+
+    return age
+
