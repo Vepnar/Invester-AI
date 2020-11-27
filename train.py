@@ -1,8 +1,18 @@
+
+from tensorflow.keras import Sequential, layers
 import dataset as dt
-from model import Forcaster
+
+def Forcaster(input_shape, output_shape, units=32):
+    return Sequential([
+        layers.LSTM(units, return_sequences=True, input_shape=input_shape),
+        layers.Dropout(0.1),
+        layers.LSTM(units),
+        layers.Dropout(0.1),
+        layers.Dense(output_shape)
+    ])
 
 
-def main(epoch=200, batch_size=100, test_size=140, training_window=30, output_file="model.tf"):
+def main(epoch=200, batch_size=100, test_size=140, training_window=30, output_file="model.h5"):
 
     # Load modles from the file
     raw_x, raw_y = dt.load_datasets()
@@ -39,7 +49,7 @@ def main(epoch=200, batch_size=100, test_size=140, training_window=30, output_fi
     print(model.summary())
 
     # Save the model to a file
-    print(f"Saving model to ${output_file}")
+    print(f"Saving model to {output_file}")
     model.save(output_file)
 
 if __name__ == "__main__":
