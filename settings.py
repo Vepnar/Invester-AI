@@ -1,10 +1,14 @@
 import os
 import re
+import numpy as np
+import datetime from datetime
 
 
 # Don't change
 env = os.environ.get
 REMOVE_WHITESPACES = re.compile(r"\s+")
+DATE_PARSER = lambda date: datetime.strptime(date, '%Y-%m-%d')
+DTYPE = {"open": np.float64, "close": np.float64}
 
 # API settings
 KEY = os.environ["KEY"]
@@ -27,5 +31,3 @@ BATCH_SIZE = int(env("BATCH_SIZE", 100))
 TEST_SIZE = int(env("TEST_SIZE", 100))
 TRAINING_WINDOW = int(env("TRAINING_WINDOW", '10'))
 START_DATE = env("START_DATE", "2019-1-1")
-
-

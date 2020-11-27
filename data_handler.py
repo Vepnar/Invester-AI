@@ -8,23 +8,14 @@ Author: Vepnar (Arjan de Haan)
 import os
 import re
 import pickle
-import numpy as np
 import pandas as pd
 from datetime import datetime
 
 from sklearn.preprocessing import MinMaxScaler
 
+# Dirty import
+from settings import *
 
-# Constants.
-REMOVE_WHITESPACES = re.compile(r"\s+")
-DTYPE = {"open": np.float64, "close": np.float64, "high": np.float64, "low": np.float64}
-DATE_PARSER = lambda date: datetime.strptime(date, '%Y-%m-%d')
-
-# Recieve enviroment variables.
-DATASET_DIR = os.environ.get("DATASET_DIR", './dataset')
-TRAINING_SETS = re.sub(REMOVE_WHITESPACES, "", os.environ.get("TRAIN_ON_SETS")).split(",")
-TARGET_SET = os.environ.get("TARGET_CURRENCY", 'BTC')
-TRAINING_SETS.insert(0, TARGET_SET)
 
 # Global variable
 SCALERS = None
