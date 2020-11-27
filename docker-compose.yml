@@ -16,3 +16,12 @@ services:
     volumes:
       - .:/usr/src/app
     command: python convert_csv.py
+  trainer:
+    build:
+      dockerfile: Dockerfile-gpu
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+    command: python train.py
