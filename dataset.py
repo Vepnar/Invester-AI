@@ -7,6 +7,7 @@ Author: Vepnar (Arjan de Haan)
 
 import os
 import re
+import pickle
 import numpy as np
 import pandas as pd
 
@@ -126,7 +127,6 @@ def min_max_scaler(train_x: np.array, train_y: np.array) -> (np.array, np.array)
         SCALERS = [MinMaxScaler(), MinMaxScaler()]
         train_x = SCALERS[0].fit_transform(train_x)
         train_y = SCALERS[1].fit_transform(train_y)
-
     return train_x, train_y
 
 def unscale(train_x: np.array, train_y: np.array) -> (np.array, np.array):
@@ -148,3 +148,12 @@ def unscale_y(train_y: np.array, window: bool = False) -> np.array:
     if window:
         train_y = [train_y]
     return SCALERS[1].inverse_transform(train_y)
+
+def store_scaler(path='scaler.pickle'):
+    with open(path, 'wb') as file:
+        pickle.dump(SCALERS, file)
+
+def load_scaler(path='scaler.pickle'):
+    global SCALERS
+    with open(path, 'rb') as file:
+        SCALERS = pickle.load(file)
