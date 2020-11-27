@@ -3,22 +3,12 @@
 
 import os
 import re
-import typing
 import time
+import json
 import requests
 
-# Constants
-REMOVE_WHITESPACES = re.compile(r"\s+")
-URL = "https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}{comp_sym}?apikey={key}"
-
-# Enviroment variables
-KEY = os.environ["KEY"]
-TRAINING_SETS = re.sub(REMOVE_WHITESPACES, "", os.environ["TRAIN_ON_SETS"]).split(",")
-COMPARING_CURRENCY = os.environ["COMPARING_CURRENCY"]
-DATASET_DIR = os.environ["DATASET_DIR"]
-TARGET_SET = os.environ.get("TARGET_CURRENCY", 'BTC')
-TRAINING_SETS.insert(0, TARGET_SET)
-
+import numpy as np
+from settings import *
 
 def download_currency(symbol: str) -> None:
     """Download a dataset of the given symbol.
@@ -32,7 +22,7 @@ def download_currency(symbol: str) -> None:
     with open(f"{DATASET_DIR}/json/{symbol}.json", "wb") as file:
 
         # Craft the url where the dataset could be downloaded from and make a get request.
-        url = URL.format(symbol=symbol, comp_sym=COMPARING_CURRENCY, key=KEY)
+        url = API_URL.format(symbol=symbol, comp_sym=COMPARING_CURRENCY, key=KEY, data='historical-price-full')
         result = requests.get(url)
 
         # Handle data recieval exception.
@@ -45,7 +35,7 @@ def download_currency(symbol: str) -> None:
         file.write(result.content)
 
 
-def download_everything():
+def download_everything(overwrite=False):
     """Download all not downloaded datasets.
     """
 
@@ -56,7 +46,7 @@ def download_everything():
     for symbol in TRAINING_SETS:
 
         # Ignore datasets that are already downloaded.
-        if os.path.isfile(f"{DATASET_DIR}/json/{symbol}.json"):
+        if os.path.isfile(f"{DATASET_DIR}/json/{symbol}.json") and not overwrite:
             print(f"{symbol} already exists. skipping")
             continue
 
@@ -67,6 +57,28 @@ def download_everything():
         # Wait a couple of seconds to prevent throttling.
         time.sleep(5)
 
+def recieve_update(symbol: str, data: str='4hour') -> np.array:
+    """Recieve new data from the financial api.
+
+    Args:
+        symbol (str): Symbol of the currency for example BTC
+        data (str, optional): Range of the date. Defaults to '4hour'.
+
+    Returns:
+        np.array: row of data from the given symbol
+    """
+
+    # Call data from the api
+    url = API_URL.format(symbol=symbol, comp_sym=COMPARING_CURRENCY, key=KEY, data='historical-price-full')
+    result = requests.get(url).content
+    raw_data = json.loads(result)['historical'][0]
+    
+    # Create a row of features
+    output = []
+    for feature in FEATURES:
+        output.append(raw_data[feature])
+
+    return np.asarray(output)
 
 if __name__ == "__main__":
     download_everything()
