@@ -17,8 +17,10 @@ REMOVE_WHITESPACES = re.compile(r"\s+")
 DTYPE = {"open": np.float64, "close": np.float64, "high": np.float64, "low": np.float64}
 
 # Recieve enviroment variables.
-DATASET_DIR = os.environ["DATASET_DIR"]
-TRAINING_SETS = re.sub(REMOVE_WHITESPACES, "", os.environ["TRAIN_ON_SETS"]).split(",")
+DATASET_DIR = os.environ.get("DATASET_DIR", './dataset')
+TRAINING_SETS = re.sub(REMOVE_WHITESPACES, "", os.environ.get("TRAIN_ON_SETS")).split(",")
+TARGET_SET = os.environ.get("TARGET_CURRENCY", 'BTC')
+TRAINING_SETS.insert(0, TARGET_SET)
 
 # Global variable
 SCALERS = None
@@ -55,8 +57,7 @@ def count_datapoints(after_date: str) -> None:
         print(symbol, len(load_dataset(symbol, after_date)))
 
 
-def load_datasets(
-    target: str, after_date: str, remove_date: bool = True
+def load_datasets(after_date: str = '2015-1-1', remove_date: bool = True
 ) -> (np.array, np.array):
     # TODO add comments
     train_y = []
@@ -71,7 +72,7 @@ def load_datasets(
             train_x = train_x.merge(raw_df, how="outer", on="date")
 
         # Set the open price as the Y data when the symbols match
-        if symbol == target:
+        if symbol == TARGET_SET:
             train_y = raw_df[["open", "close"]]
 
     # Drop rows with missing data.
@@ -131,3 +132,4 @@ def unscale(train_x: np.array, train_y: np.array) -> (np.array, np.array):
     global SCALERS
     train_x = SCALERS[0].inverse_transform(train_x)
     train_y = SCALERS[1].inverse_transform(train_y)
+    return train_x, train_y
