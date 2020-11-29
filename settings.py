@@ -1,5 +1,6 @@
 import os
 import re
+import functools
 import numpy as np
 from datetime import datetime
 
@@ -9,6 +10,9 @@ env = os.environ.get
 REMOVE_WHITESPACES = re.compile(r"\s+")
 DATE_PARSER = lambda date: datetime.strptime(date, "%Y-%m-%d")
 DTYPE = {"open": np.float64, "close": np.float64}
+
+# Monkey patch. Python didn't flush stdout
+print = functools.partial(print, flush=True) 
 
 # API settings
 KEY = os.environ["KEY"]
@@ -33,3 +37,9 @@ BATCH_SIZE = int(env("BATCH_SIZE", 100))
 TEST_SIZE = int(env("TEST_SIZE", 100))
 TRAINING_WINDOW = int(env("TRAINING_WINDOW", "10"))
 START_DATE = env("START_DATE", "2019-1-1")
+
+# Bot settings
+MIN_G_CHANGE=0.000001
+
+# Options = [1min, 5min, 15min, 30min, 1hour, 4hour]
+UPDATE_WINDOW = '30min'

@@ -10,6 +10,7 @@ import requests
 import numpy as np
 from settings import *
 
+
 def download_currency(symbol: str) -> None:
     """Download a dataset of the given symbol.
 
@@ -22,7 +23,12 @@ def download_currency(symbol: str) -> None:
     with open(f"{DATASET_DIR}/json/{symbol}.json", "wb") as file:
 
         # Craft the url where the dataset could be downloaded from and make a get request.
-        url = API_URL.format(symbol=symbol, comp_sym=COMPARING_CURRENCY, key=KEY, data='historical-price-full')
+        url = API_URL.format(
+            symbol=symbol,
+            comp_sym=COMPARING_CURRENCY,
+            key=KEY,
+            data="historical-price-full",
+        )
         result = requests.get(url)
 
         # Handle data recieval exception.
@@ -57,7 +63,8 @@ def download_everything(overwrite=False):
         # Wait a couple of seconds to prevent throttling.
         time.sleep(5)
 
-def recieve_update(symbol: str, data: str='4hour') -> list:
+
+def recieve_update(symbol: str, data: str = "4hour") -> list:
     """Recieve new data from the financial api.
 
     Args:
@@ -69,10 +76,15 @@ def recieve_update(symbol: str, data: str='4hour') -> list:
     """
 
     # Call data from the api
-    url = API_URL.format(symbol=symbol, comp_sym=COMPARING_CURRENCY, key=KEY, data='historical-price-full')
+    url = API_URL.format(
+        symbol=symbol,
+        comp_sym=COMPARING_CURRENCY,
+        key=KEY,
+        data="historical-price-full",
+    )
     result = requests.get(url).content
-    raw_data = json.loads(result)['historical'][0]
-    
+    raw_data = json.loads(result)["historical"][0]
+
     # Create a row of features
     output = []
     for feature in FEATURES:
@@ -80,11 +92,14 @@ def recieve_update(symbol: str, data: str='4hour') -> list:
 
     return output
 
-def recieve_updates(data: str='4hour') -> np.array:
+
+def recieve_updates(data: str = "4hour") -> np.array:
     output = []
     for symbol in TRAINING_SETS:
         output += recieve_update(symbol)
 
     return output
+
+
 if __name__ == "__main__":
     download_everything()

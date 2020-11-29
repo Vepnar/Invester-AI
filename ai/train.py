@@ -1,7 +1,6 @@
 import os
-
+from . import data_handler as dh
 from tensorflow.keras import Sequential, layers
-import data_handler as dh
 
 from settings import *
 
