@@ -57,7 +57,7 @@ def download_everything(overwrite=False):
         # Wait a couple of seconds to prevent throttling.
         time.sleep(5)
 
-def recieve_update(symbol: str, data: str='4hour') -> np.array:
+def recieve_update(symbol: str, data: str='4hour') -> list:
     """Recieve new data from the financial api.
 
     Args:
@@ -78,7 +78,13 @@ def recieve_update(symbol: str, data: str='4hour') -> np.array:
     for feature in FEATURES:
         output.append(raw_data[feature])
 
-    return np.asarray(output)
+    return output
 
+def recieve_updates(data: str='4hour') -> np.array:
+    output = []
+    for symbol in TRAINING_SETS:
+        output += recieve_update(symbol)
+
+    return output
 if __name__ == "__main__":
     download_everything()
