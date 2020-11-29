@@ -163,6 +163,8 @@ def min_max_scaler(train_x: np.array, train_y: np.array) -> (np.array, np.array)
 
     return train_x, train_y
 
+def scale_x(train_x: np.array) -> np.array:
+    return SCALERS[0].transform(train_x)
 
 def unscale(train_x: np.array, train_y: np.array) -> (np.array, np.array):
     """Undo the set scaler and transform the data back in normal data
@@ -256,3 +258,24 @@ def dataset_age() -> int:
             age = difference
 
     return age
+
+def latest_window():
+    # TODO add documentation
+    # Loop though all active datasets.
+    window = pd.DataFrame()
+
+    for symbol in TRAINING_SETS:
+        
+        raw_df = parse_dataframe(symbol, nrows=TRAINING_WINDOW)
+
+        # Merge dataframes when this is possible
+        if window.empty:
+            window = raw_df
+        else:
+            window = window.merge(raw_df, how="outer", on="date")
+
+    # remove all the dates
+    window.drop(["date"], 1, inplace=True)
+
+    # resize the window the the appropiate size
+    return np.asarray([scale_x(window.to_numpy())])
