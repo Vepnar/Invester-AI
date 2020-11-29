@@ -80,10 +80,10 @@ def recieve_update(symbol: str, data: str = "4hour") -> list:
         symbol=symbol,
         comp_sym=COMPARING_CURRENCY,
         key=KEY,
-        data="historical-price-full",
+        data="historical-chart/" + data,
     )
     result = requests.get(url).content
-    raw_data = json.loads(result)["historical"][0]
+    raw_data = json.loads(result)[0]
 
     # Create a row of features
     output = []
@@ -96,7 +96,7 @@ def recieve_update(symbol: str, data: str = "4hour") -> list:
 def recieve_updates(data: str = "4hour") -> np.array:
     output = []
     for symbol in TRAINING_SETS:
-        output += recieve_update(symbol)
+        output += recieve_update(symbol, data)
 
     return output
 
