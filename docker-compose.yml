@@ -43,3 +43,12 @@ services:
     volumes:
       - .:/usr/src/app
     command: python bot.py
+  notebook:
+    build:
+      dockerfile: Dockerfile.jupyter
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+    
