@@ -7,7 +7,7 @@ services:
       - .env
     volumes:
       - .:/usr/src/app
-    command: python download-datasets.py 
+    command: python financial_api.py 
   convert:
     build:
       context: .
@@ -24,4 +24,22 @@ services:
       - .env
     volumes:
       - .:/usr/src/app
-    command: python train.py
+    command: python main.py
+  predict:
+    build:
+      dockerfile: Dockerfile-gpu
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+    command: cd ./ai && python predict.py
+  bot:
+    build:
+      dockerfile: Dockerfile-gpu
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+    command: python bot.py

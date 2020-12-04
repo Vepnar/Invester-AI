@@ -1,17 +1,16 @@
 import os
+from . import scaler
 from . import data_handler as dh
 from tensorflow.keras import Sequential, layers
 
 from settings import *
 
 
-def Forcaster(input_shape, output_shape, units=32):
+def Forcaster(input_shape, output_shape, units=10):
     return Sequential(
         [
             layers.LSTM(units, return_sequences=True, input_shape=input_shape),
-            layers.Dropout(0.1),
-            layers.LSTM(units),
-            layers.Dropout(0.1),
+            layers.LSTM(units, return_sequences=False, input_shape=input_shape),
             layers.Dense(output_shape),
         ]
     )
@@ -28,8 +27,8 @@ def main():
     test_y = raw_y[:TEST_SIZE]
 
     # Scale train & test data
-    train_x, train_y = dh.min_max_scaler(train_x, train_y)
-    test_x, test_y = dh.min_max_scaler(test_x, test_y)
+    train_x, train_y = scaler.min_max_scaler(train_x, train_y)
+    test_x, test_y = scaler.min_max_scaler(test_x, test_y)
 
     # Create training windows
     train_x, train_y = dh.create_window(train_x, train_y, window_size=TRAINING_WINDOW)
@@ -55,7 +54,7 @@ def main():
     # Save the model to a file
     print(f"Saving model to {MODEL_DIR}/{MODEL_NAME}")
     model.save(f"{MODEL_DIR}/{MODEL_NAME}.h5")
-    dh.store_scaler(f"{MODEL_DIR}/{MODEL_NAME}.pickle")
+    scaler.store_scaler(f"{MODEL_DIR}/{MODEL_NAME}.pickle")
 
 
 if __name__ == "__main__":

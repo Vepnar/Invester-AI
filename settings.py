@@ -39,7 +39,7 @@ TRAINING_WINDOW = int(env("TRAINING_WINDOW", "10"))
 START_DATE = env("START_DATE", "2019-1-1")
 
 # Bot settings
-MIN_G_CHANGE=0.000001
+MIN_G_CHANGE=0.005
 
 # Options = [1min, 5min, 15min, 30min, 1hour, 4hour]
 UPDATE_WINDOW = '30min'

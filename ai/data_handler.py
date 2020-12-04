@@ -47,7 +47,7 @@ def load_dataset(
         pd.DataFrame: An dataframe with all usefull data
     """
     df = pd.read_csv(f"{DATASET_DIR}/csv/{symbol}.csv", dtype=DTYPE, parse_dates=True)
-    df.sort_values(by=["date"], inplace=True)
+    #df.sort_values(by=["date"], inplace=True)
     df = df[(after_date < df["date"])]
     if remove_date:
         df.drop(["date"], 1, inplace=True)
