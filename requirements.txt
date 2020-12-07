@@ -2,3 +2,4 @@ requests
 sklearn
 pandas
 matplotlib
+seaborn
