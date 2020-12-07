@@ -47,6 +47,8 @@ services:
     build:
       dockerfile: Dockerfile.jupyter
       context: .
+    ports:
+      - '8888:8888'
     env_file:
       - .env
     volumes:
